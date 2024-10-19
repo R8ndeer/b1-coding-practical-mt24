@@ -12,13 +12,15 @@ class Controller:
         self._kd = kd
         self._ki = ki  # not used in this assignment
 
+        self._last_error = 0.0
+
 
     def get_error(self, reference: float, depth: float) -> float:
         """Get the error between reference signal and output signal."""
         return float(reference - depth)
 
 
-    def get_action(self, reference: float, depth: float, last_error: float):
+    def get_action(self, reference: float, depth: float):
         """Get the current controller action (force in y-direction).
         
         Parameters:
@@ -26,6 +28,8 @@ class Controller:
             depth (float): current y position of submarine
             last_error (float): error from last time step
         """
-        error = self.get_error(reference, depth)
-        action = self._kp * error + self._kd * (error - last_error)
+        error = reference - depth
+        action = self._kp * error + self._kd * (error - self._last_error)
+        # Update last error
+        self._last_error = error
         return action
